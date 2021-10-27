@@ -1,0 +1,6 @@
+# xmake cache
+.xmake/
+build/
+
+# local
+.vscode
