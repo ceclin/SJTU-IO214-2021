@@ -1,12 +1,15 @@
 #include "vrp.h"
 
-VRP::VRP(std::initializer_list<Location> location_list) : locations(location_list)
+VRP::VRP(
+    std::initializer_list<VehicleMeta> vehicle_types,
+    std::initializer_list<Location> locations)
+    : vehicle_types(vehicle_types), locations(locations)
 {
-    for (size_t j = 0; j < locations.size(); ++j)
+    for (size_t j = 0; j < this->locations.size(); ++j)
     {
         for (size_t i = 0; i <= j; ++i)
         {
-            distance_.push_back(Location::distance(locations[j], locations[i]));
+            distance_.push_back(Location::distance(this->locations[j], this->locations[i]));
         }
     }
 }
