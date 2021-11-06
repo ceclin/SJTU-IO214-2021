@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "vrp.h"
+#include "heuristic.h"
 
 const VRP vrp(
     {{230, 180}, {290, 300}},
@@ -131,5 +132,16 @@ const VRP vrp(
 int main(int argc, char **argv)
 {
     std::cout << "hello world!" << std::endl;
+    Solution soln = heuristic(vrp);
+    std::cout << soln << std::endl;
+    double cost = 0;
+    int count = 0;
+    for (const auto &v : soln.vehicles)
+    {
+        cost += v.cost();
+        count += v.route().size() - 2;
+    }
+    std::cout << cost << std::endl;
+    std::cout << count << std::endl;
     return 0;
 }
