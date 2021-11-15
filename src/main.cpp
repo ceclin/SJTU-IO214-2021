@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
 
 #include "vrp.h"
 #include "heuristic.h"
@@ -131,6 +133,9 @@ const VRP vrp(
 
 int main(int argc, char **argv)
 {
+    auto seed = time(NULL);
+    srand(seed);
+    std::cout << "random seed = " << seed << std::endl;
     std::cout << "hello world!" << std::endl;
     Solution soln = heuristic(vrp);
     std::cout << soln << std::endl;
