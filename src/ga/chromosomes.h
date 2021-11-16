@@ -10,6 +10,7 @@ class Chromosomes
 public:
     std::reference_wrapper<const VRP> vrp;
 
+    Chromosomes(const VRP &vrp, const std::vector<size_t> &seq);
     explicit Chromosomes(const Solution &soln);
     operator Solution() const;
 
