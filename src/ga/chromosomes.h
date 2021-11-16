@@ -13,9 +13,9 @@ public:
     explicit Chromosomes(const Solution &soln);
     operator Solution() const;
 
-    inline int fitness() const { return fitness_; }
+    inline double fitness() const { return fitness_; }
 
 private:
     std::vector<size_t> seq_;
-    int fitness_ = 0;
+    double fitness_ = 0;
 };
