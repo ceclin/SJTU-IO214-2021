@@ -10,6 +10,7 @@ set_warnings("all", "error")
 target("SJTU-IO214")
     set_kind("binary")
     add_files("src/*.cpp")
+    add_files("src/ga/*.cpp")
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
