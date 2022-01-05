@@ -3,18 +3,6 @@
 #include <algorithm>
 #include <limits>
 
-Chromosomes::Chromosomes(const Solution &soln)
-    : vrp(soln.vrp)
-{
-    seq_.reserve(vrp.get().locations.size() - 1);
-    for (const auto &v : soln.vehicles)
-    {
-        const auto route = v.route();
-        seq_.insert(seq_.end(), route.begin() + 1, route.end() - 1);
-        fitness_ += v.cost();
-    }
-}
-
 #define INF (std::numeric_limits<double>::infinity())
 
 namespace
@@ -82,8 +70,19 @@ namespace
 Chromosomes::Chromosomes(const VRP &vrp, const std::vector<size_t> &seq)
     : vrp(vrp), seq_(seq)
 {
-    auto result = split(vrp, seq_);
-    fitness_ = result.v.back();
+    fitness_ = split(vrp, seq_).v.back();
+}
+
+Chromosomes::Chromosomes(const Solution &soln)
+    : vrp(soln.vrp)
+{
+    seq_.reserve(vrp.get().locations.size() - 1);
+    for (const auto &v : soln.vehicles)
+    {
+        const auto route = v.route();
+        seq_.insert(seq_.end(), route.begin() + 1, route.end() - 1);
+    }
+    fitness_ = split(vrp, seq_).v.back();
 }
 
 Chromosomes::operator Solution() const
@@ -109,4 +108,51 @@ Chromosomes::operator Solution() const
         i = b - 1;
     }
     return soln;
+}
+
+namespace
+{
+    int random_int(int min, int max)
+    {
+        return min + rand() % (max - min);
+    }
+}
+
+std::pair<Chromosomes, Chromosomes> Chromosomes::ox(const Chromosomes &p1, const Chromosomes &p2)
+{
+    const auto &vrp = p1.vrp.get();
+    size_t n = p1.seq_.size();
+    std::vector<size_t> s1(n);
+    std::vector<size_t> s2(n);
+    std::vector<bool> t1(n + 1);
+    std::vector<bool> t2(n + 1);
+    size_t i = random_int(0, n);
+    size_t j = random_int(0, n);
+    if (i > j)
+        std::swap(i, j);
+    size_t k = i;
+    while (k <= j)
+    {
+        s1[k] = p1.seq_[k];
+        t1[s1[k]] = true;
+        s2[k] = p2.seq_[k];
+        t2[s2[k]] = true;
+        ++k;
+    }
+    k = k % n;
+    size_t a = k;
+    size_t b = k;
+    while (k > j || k < i)
+    {
+        while (t1[p2.seq_[a]])
+            a = (a + 1) % n;
+        s1[k] = p2.seq_[a];
+        t1[s1[k]] = true;
+        while (t2[p1.seq_[b]])
+            b = (b + 1) % n;
+        s2[k] = p1.seq_[b];
+        t2[s2[k]] = true;
+        k = (k + 1) % n;
+    }
+    return {Chromosomes(vrp, std::move(s1)), Chromosomes(vrp, std::move(s2))};
 }

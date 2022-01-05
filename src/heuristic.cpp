@@ -100,41 +100,8 @@ namespace
     }
 }
 
-namespace
-{
-    void replace_if_better(VehicleMeta meta, Solution &soln)
-    {
-        const auto &vrp = soln.vrp.get();
-        auto &vehicles = soln.vehicles;
-        for (size_t i = 0; i < vehicles.size();)
-        {
-            const auto &c = vehicles[i];
-            if (c.meta().capacity == meta.capacity)
-                break;
-            if (c.load() <= meta.capacity)
-            {
-                Vehicle v(vrp, meta);
-                v.update_route([c](std::vector<size_t> &r)
-                               { r = c.route(); });
-                vehicles.erase(vehicles.begin() + i);
-                vehicles.push_back(v);
-                continue;
-            }
-            ++i;
-        }
-    }
-}
-
-Solution heuristic(const VRP &vrp)
+Solution heuristic(const VRP &vrp, VehicleMeta meta)
 {
     auto types = vrp.vehicle_types;
-    std::sort(types.begin(), types.end(), [](VehicleMeta a, VehicleMeta b)
-              { return a.capacity < b.capacity; });
-    auto soln = saving_heuristic(vrp, types.back());
-    types.pop_back();
-    for (VehicleMeta meta : types)
-    {
-        replace_if_better(meta, soln);
-    }
-    return soln;
+    return saving_heuristic(vrp, meta);
 }

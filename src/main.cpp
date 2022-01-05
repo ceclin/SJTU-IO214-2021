@@ -4,6 +4,8 @@
 
 #include "vrp.h"
 #include "heuristic.h"
+#include "ga/chromosomes.h"
+#include "ga/genetic.h"
 
 const VRP vrp(
     {{230, 180}, {290, 300}},
@@ -135,18 +137,12 @@ int main(int argc, char **argv)
 {
     auto seed = time(NULL);
     srand(seed);
+    Genetic genetic(vrp);
+    genetic.initials = {
+        heuristic(vrp, vrp.vehicle_types[0]),
+        heuristic(vrp, vrp.vehicle_types[1]),
+    };
+    std::cout << genetic.optimize() << std::endl;
     std::cout << "random seed = " << seed << std::endl;
-    std::cout << "hello world!" << std::endl;
-    Solution soln = heuristic(vrp);
-    std::cout << soln << std::endl;
-    double cost = 0;
-    int count = 0;
-    for (const auto &v : soln.vehicles)
-    {
-        cost += v.cost();
-        count += v.route().size() - 2;
-    }
-    std::cout << cost << std::endl;
-    std::cout << count << std::endl;
     return 0;
 }
